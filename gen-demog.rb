@@ -148,11 +148,21 @@ end
 
 
 existing_voters, voters_in_jurisdictions, cancelled = load_existing_voterids('vtl_va_1.01.xml')
-jurisdictions   = load_jurisdictions('count-by-locality.csv')
 
-render_demog_header
-jurisdictions.each do |code, data|
-  render_demog_for_locality(code, data[:name], data[:total_active_voters], existing_voters, voters_in_jurisdictions[data[:name]], cancelled)
+if ARGV[0] == '-targeted'
+  render_demog_header
+  voters_in_jurisdictions.each do |jur, voter_ids|
+    voter_ids.each do |voter_id|
+      render_vdr(voter_id, jur, cancelled)
+    end
+  end
+  render_demog_footer
+else
+  jurisdictions   = load_jurisdictions('count-by-locality.csv')
+
+  render_demog_header
+  jurisdictions.each do |code, data|
+    render_demog_for_locality(code, data[:name], data[:total_active_voters], existing_voters, voters_in_jurisdictions[data[:name]], cancelled)
+  end
+  render_demog_footer
 end
-render_demog_footer
-
